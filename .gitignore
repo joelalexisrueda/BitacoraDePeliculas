@@ -1,0 +1,68 @@
+# ==========================================
+# Gradle & Build Artifacts
+# ==========================================
+.gradle/
+**/build/
+!src/**/build/
+build/
+*.pda
+
+# ==========================================
+# Kotlin & KMP
+# ==========================================
+.kotlin/
+*.klib
+kotlin-daemon.log*
+
+# ==========================================
+# Android & Local Properties (Secrets/API Keys)
+# ==========================================
+local.properties
+.externalNativeBuild/
+.cxx/
+captures/
+*.apk
+*.aab
+*.ap_
+
+# ==========================================
+# Android Studio / IntelliJ IDEA
+# ==========================================
+.idea/
+*.iml
+*.ipr
+*.iws
+.navigation/
+
+# ==========================================
+# iOS / Xcode
+# ==========================================
+xcuserdata/
+DerivedData/
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+*.xcworkspace/*
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+.swiftpm/
+Pods/
+
+# ==========================================
+# Environment Variables & Secrets (TMDB / Supabase)
+# ==========================================
+.env
+*.env.*
+secrets.properties
+
+# ==========================================
+# System / OS Files
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
