@@ -1,47 +1,120 @@
 package com.example.bitacoradepeliculas
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import org.jetbrains.compose.resources.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.bitacoradepeliculas.data.repository.AuthRepository
+import com.example.bitacoradepeliculas.di.appModule
+import com.example.bitacoradepeliculas.navigation.Screen
+import com.example.bitacoradepeliculas.presentation.auth.LoginViewModel
+import com.example.bitacoradepeliculas.presentation.auth.RegisterViewModel
+import com.example.bitacoradepeliculas.ui.auth.LoginScreen
+import com.example.bitacoradepeliculas.ui.auth.RegisterScreen
+import com.example.bitacoradepeliculas.ui.home.HomeScreen
+import com.example.bitacoradepeliculas.ui.theme.AppTheme
+import io.github.jan.supabase.auth.status.SessionStatus
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.context.startKoin
+import org.koin.mp.KoinPlatform
 
-import bitacoradepeliculas.shared.generated.resources.Res
-import bitacoradepeliculas.shared.generated.resources.compose_multiplatform
+private fun initKoin() {
+    if (KoinPlatform.getKoinOrNull() == null) {
+        startKoin {
+            modules(appModule)
+        }
+    }
+}
 
 @Composable
-@Preview
 fun App() {
-    MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
-            }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+    initKoin()
+
+    AppTheme {
+        val authRepository: AuthRepository = koinInject()
+        val sessionStatus by authRepository.sessionStatus.collectAsStateWithLifecycle()
+
+        when (sessionStatus) {
+            is SessionStatus.Initializing -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(48.dp),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+            else -> {
+                val isAuthenticated = sessionStatus is SessionStatus.Authenticated
+                val startDestination: Screen = if (isAuthenticated) Screen.Home else Screen.Login
+                val navController = rememberNavController()
+                val scope = rememberCoroutineScope()
+
+                NavHost(
+                    navController = navController,
+                    startDestination = startDestination,
+                    enterTransition = { fadeIn() },
+                    exitTransition = { fadeOut() }
+                ) {
+                    composable<Screen.Login> {
+                        val viewModel: LoginViewModel = koinViewModel()
+                        LoginScreen(
+                            viewModel = viewModel,
+                            onNavigateToRegister = {
+                                navController.navigate(Screen.Register)
+                            },
+                            onLoginSuccess = {
+                                navController.navigate(Screen.Home) {
+                                    popUpTo(Screen.Login) { inclusive = true }
+                                }
+                            }
+                        )
+                    }
+
+                    composable<Screen.Register> {
+                        val viewModel: RegisterViewModel = koinViewModel()
+                        RegisterScreen(
+                            viewModel = viewModel,
+                            onNavigateBack = {
+                                navController.popBackStack()
+                            },
+                            onRegisterSuccess = {
+                                navController.navigate(Screen.Home) {
+                                    popUpTo(Screen.Register) { inclusive = true }
+                                }
+                            }
+                        )
+                    }
+
+                    composable<Screen.Home> {
+                        HomeScreen(
+                            onLogout = {
+                                scope.launch {
+                                    authRepository.logout()
+                                    navController.navigate(Screen.Login) {
+                                        popUpTo(Screen.Home) { inclusive = true }
+                                    }
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }
