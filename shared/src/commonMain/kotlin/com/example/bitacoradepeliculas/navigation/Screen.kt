@@ -19,5 +19,8 @@ sealed interface Screen {
     data object SearchMovie : Screen
 
     @Serializable
+    data class LogMovie(val title: String, val year: Int? = null, val posterPath: String? = null) : Screen
+
+    @Serializable
     data class MovieLogDetail(val movieLogId: Long) : Screen
 }

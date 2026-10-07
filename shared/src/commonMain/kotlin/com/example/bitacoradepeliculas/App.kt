@@ -24,10 +24,12 @@ import com.example.bitacoradepeliculas.navigation.Screen
 import com.example.bitacoradepeliculas.presentation.auth.LoginViewModel
 import com.example.bitacoradepeliculas.presentation.auth.RegisterViewModel
 import com.example.bitacoradepeliculas.presentation.home.HomeViewModel
+import com.example.bitacoradepeliculas.presentation.search.SearchMovieViewModel
 import com.example.bitacoradepeliculas.ui.auth.LoginScreen
 import com.example.bitacoradepeliculas.ui.auth.RegisterScreen
 import com.example.bitacoradepeliculas.ui.detail.MovieLogDetailScreen
 import com.example.bitacoradepeliculas.ui.home.HomeScreen
+import com.example.bitacoradepeliculas.ui.log.LogMovieScreen
 import com.example.bitacoradepeliculas.ui.search.SearchMovieScreen
 import com.example.bitacoradepeliculas.ui.theme.AppTheme
 import io.github.jan.supabase.auth.status.SessionStatus
@@ -126,7 +128,24 @@ fun App() {
                     }
 
                     composable<Screen.SearchMovie> {
+                        val viewModel: SearchMovieViewModel = koinViewModel()
                         SearchMovieScreen(
+                            viewModel = viewModel,
+                            onNavigateBack = {
+                                navController.popBackStack()
+                            },
+                            onNavigateToLogMovie = { title, year, posterPath ->
+                                navController.navigate(Screen.LogMovie(title, year, posterPath))
+                            }
+                        )
+                    }
+
+                    composable<Screen.LogMovie> { backStackEntry ->
+                        val route: Screen.LogMovie = backStackEntry.toRoute()
+                        LogMovieScreen(
+                            movieTitle = route.title,
+                            movieYear = route.year,
+                            posterPath = route.posterPath,
                             onNavigateBack = {
                                 navController.popBackStack()
                             }
