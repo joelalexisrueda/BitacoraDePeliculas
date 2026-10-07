@@ -19,7 +19,7 @@ interface MovieSearchRepository {
 }
 
 class MovieSearchRepositoryImpl(
-    private val httpClient: HttpClient
+    private val httpClient: HttpClient,
 ) : MovieSearchRepository {
 
     private val directorCache = mutableMapOf<Long, String?>()
@@ -34,7 +34,7 @@ class MovieSearchRepositoryImpl(
                 parameter("api_key", AppConfig.TMDB_API_KEY)
                 parameter("query", query)
                 parameter("language", "es-ES")
-                parameter("include_adult", false)
+                parameter("include_adult", value = false)
                 parameter("page", 1)
             }.body()
 
@@ -45,7 +45,7 @@ class MovieSearchRepositoryImpl(
                     title = dto.title,
                     year = year,
                     posterPath = dto.posterPath,
-                    directorState = DirectorState.Loading
+                    directorState = DirectorState.Loading,
                 )
             }
         }.fold(
