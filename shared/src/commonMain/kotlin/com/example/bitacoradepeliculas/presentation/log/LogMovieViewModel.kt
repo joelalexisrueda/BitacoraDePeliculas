@@ -21,9 +21,9 @@ import kotlinx.datetime.LocalDate
 class LogMovieViewModel(
     private val movieLogRepository: MovieLogRepository,
     private val todayProvider: TodayProvider,
-    val initialTitle: String,
-    val initialYear: Int?,
-    val initialPosterPath: String?
+    initialTitle: String,
+    initialYear: Int?,
+    initialPosterPath: String?
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
