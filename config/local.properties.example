@@ -1,6 +1,9 @@
 # Configuración de Claves para Bitácora de Películas (NO SUBIR AL REPOSITORIO)
-# Copia este archivo como 'local.properties' en la raíz del proyecto y completa con tus credenciales reales.
+# Copia este archivo como 'local.properties' en la raíz del proyecto y completa con tus credenciales.
 
-SUPABASE_URL=https://tu-proyecto.supabase.co
-SUPABASE_ANON_KEY=tu-anon-key-aqui
-TMDB_API_KEY=tu-tmdb-api-key-aqui
+# Credenciales de Supabase
+SUPABASE_URL=https://psixjbwpjdmnhkaplipd.supabase.co
+SUPABASE_ANON_KEY=sb_publishable_W7g7eCgY5xd_g-V51CdPZg_1OZR_iCC
+
+# Clave de API de TMDB (Requerida para la búsqueda de películas)
+TMDB_API_KEY=tu_tmdb_api_key_aqui

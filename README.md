@@ -1,31 +1,27 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# Bitácora de Películas (Kotlin Multiplatform)
 
-* [/iosApp](./iosApp/iosApp) contains an iOS application. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+Aplicación móvil desarrollada en **Kotlin Multiplatform (KMP)** y **Compose Multiplatform** para registrar y calificar películas vistas, consumiendo la API de **TMDB** y utilizando **Supabase** como backend de autenticación y base de datos.
 
-* [/shared](./shared/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./shared/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./shared/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./shared/src/jvmMain/kotlin)
-    folder is the appropriate location.
+## Estructura del Proyecto
 
-### Running the apps
+* [/shared](./shared/src) contiene el código común en Kotlin Multiplatform (módulos de datos, dominio, presentación MVVM y pantallas Compose).
+* [/androidApp](./androidApp) aplicación Android.
+* [/iosApp](./iosApp) aplicación iOS en SwiftUI/KMP.
 
-Use the run configurations provided by the run widget in your IDE's toolbar. You can also use these commands and options:
+## Configuración de Claves (local.properties)
 
-- Android app: `./gradlew :androidApp:assembleDebug`
-- iOS app: open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+Para habilitar la búsqueda de películas con la API pública de **TMDB**, debes agregar tu clave en el archivo `local.properties` ubicado en la raíz del proyecto (este archivo está ignorado por Git para proteger tus credenciales):
 
-### Running tests
+```properties
+TMDB_API_KEY=tu_tmdb_api_key_aqui
+```
 
-Use the run button in your IDE's editor gutter, or run tests using Gradle tasks:
+> **Nota sobre seguridad de claves cliente:**
+> En aplicaciones móviles cliente, las claves incluidas dentro de un APK o binario pueden ser extraídas mediante ingeniería inversa. Esto es aceptable y esperado para un challenge técnico o clientes públicos de TMDB. Para entornos productivos de alta seguridad, se recomienda utilizar un proxy/backend intermedio.
 
-- Android tests: `./gradlew :shared:testAndroidHostTest`
-- iOS tests: `./gradlew :shared:iosSimulatorArm64Test`
+Si no se configura `TMDB_API_KEY` en `local.properties`, el proyecto **compilará exitosamente** (con una advertencia en la consola de Gradle), y en la aplicación la búsqueda mostrará un aviso en español: *"Falta configurar la clave de TMDB"*.
 
----
+## Cómo compilar
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+- Compilación Android: `./gradlew :androidApp:assembleDebug`
+- Ejecución de Pruebas Unitarias: `./gradlew :shared:allTests`
