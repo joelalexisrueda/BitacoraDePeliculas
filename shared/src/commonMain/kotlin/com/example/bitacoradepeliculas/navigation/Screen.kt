@@ -23,4 +23,7 @@ sealed interface Screen {
 
     @Serializable
     data class MovieLogDetail(val movieLogId: Long) : Screen
+
+    @Serializable
+    data class EditMovieLog(val movieLogId: Long) : Screen
 }

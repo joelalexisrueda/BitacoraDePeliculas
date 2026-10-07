@@ -22,11 +22,13 @@ import com.example.bitacoradepeliculas.di.appModule
 import com.example.bitacoradepeliculas.navigation.Screen
 import com.example.bitacoradepeliculas.presentation.auth.LoginViewModel
 import com.example.bitacoradepeliculas.presentation.auth.RegisterViewModel
+import com.example.bitacoradepeliculas.presentation.detail.MovieLogDetailViewModel
 import com.example.bitacoradepeliculas.presentation.home.HomeViewModel
 import com.example.bitacoradepeliculas.presentation.log.LogMovieViewModel
 import com.example.bitacoradepeliculas.presentation.search.SearchMovieViewModel
 import com.example.bitacoradepeliculas.ui.auth.LoginScreen
 import com.example.bitacoradepeliculas.ui.auth.RegisterScreen
+import com.example.bitacoradepeliculas.ui.detail.EditMovieLogScreen
 import com.example.bitacoradepeliculas.ui.detail.MovieLogDetailScreen
 import com.example.bitacoradepeliculas.ui.home.HomeScreen
 import com.example.bitacoradepeliculas.ui.log.LogMovieScreen
@@ -164,7 +166,33 @@ fun App() {
 
                     composable<Screen.MovieLogDetail> { backStackEntry ->
                         val route: Screen.MovieLogDetail = backStackEntry.toRoute()
+                        val viewModel: MovieLogDetailViewModel = koinViewModel(
+                            parameters = { parametersOf(route.movieLogId) }
+                        )
                         MovieLogDetailScreen(
+                            viewModel = viewModel,
+                            onNavigateBack = {
+                                navController.popBackStack()
+                            },
+                            onNavigateToEdit = { id ->
+                                navController.navigate(Screen.EditMovieLog(id))
+                            },
+                            onNavigateToHome = {
+                                navController.navigate(Screen.Home) {
+                                    popUpTo(Screen.Home) { inclusive = true }
+                                }
+                            },
+                            onNavigateToLogin = {
+                                navController.navigate(Screen.Login) {
+                                    popUpTo(Screen.Home) { inclusive = true }
+                                }
+                            }
+                        )
+                    }
+
+                    composable<Screen.EditMovieLog> { backStackEntry ->
+                        val route: Screen.EditMovieLog = backStackEntry.toRoute()
+                        EditMovieLogScreen(
                             movieLogId = route.movieLogId,
                             onNavigateBack = {
                                 navController.popBackStack()
