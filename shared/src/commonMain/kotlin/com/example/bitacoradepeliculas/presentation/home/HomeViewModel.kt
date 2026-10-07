@@ -3,7 +3,7 @@ package com.example.bitacoradepeliculas.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bitacoradepeliculas.data.repository.AuthRepository
-import com.example.bitacoradepeliculas.data.repository.ReviewRepository
+import com.example.bitacoradepeliculas.data.repository.MovieLogRepository
 import com.example.bitacoradepeliculas.domain.model.DataError
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val reviewRepository: ReviewRepository,
+    private val movieLogRepository: MovieLogRepository,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
@@ -28,37 +28,37 @@ class HomeViewModel(
     init {
         val userName = authRepository.currentUserName() ?: "Usuario"
         _uiState.update { it.copy(userName = userName) }
-        loadReviews()
+        loadMovieLogs()
     }
 
-    fun loadReviews() {
+    fun loadMovieLogs() {
         viewModelScope.launch {
-            _uiState.update { it.copy(reviewsState = ReviewsState.Loading) }
-            fetchReviews()
+            _uiState.update { it.copy(movieLogsState = MovieLogsState.Loading) }
+            fetchMovieLogs()
         }
     }
 
     fun retry() {
-        loadReviews()
+        loadMovieLogs()
     }
 
     fun refresh() {
         if (_uiState.value.isRefreshing) return
         viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true) }
-            fetchReviews()
+            fetchMovieLogs()
             _uiState.update { it.copy(isRefreshing = false) }
         }
     }
 
     fun onResumed() {
-        val currentState = _uiState.value.reviewsState
-        if (currentState is ReviewsState.Content || currentState is ReviewsState.Empty) {
+        val currentState = _uiState.value.movieLogsState
+        if (currentState is MovieLogsState.Content || currentState is MovieLogsState.Empty) {
             viewModelScope.launch {
-                reviewRepository.getMyReviews()
-                    .onSuccess { reviews ->
-                        val newState = if (reviews.isEmpty()) ReviewsState.Empty else ReviewsState.Content(reviews)
-                        _uiState.update { it.copy(reviewsState = newState) }
+                movieLogRepository.getMyMovieLogs()
+                    .onSuccess { movieLogs ->
+                        val newState = if (movieLogs.isEmpty()) MovieLogsState.Empty else MovieLogsState.Content(movieLogs)
+                        _uiState.update { it.copy(movieLogsState = newState) }
                     }
                     .onFailure { error ->
                         if (error is DataError.SessionExpired) {
@@ -72,30 +72,30 @@ class HomeViewModel(
         }
     }
 
-    private suspend fun fetchReviews() {
-        reviewRepository.getMyReviews()
-            .onSuccess { reviews ->
-                val newState = if (reviews.isEmpty()) ReviewsState.Empty else ReviewsState.Content(reviews)
-                _uiState.update { it.copy(reviewsState = newState) }
+    private suspend fun fetchMovieLogs() {
+        movieLogRepository.getMyMovieLogs()
+            .onSuccess { movieLogs ->
+                val newState = if (movieLogs.isEmpty()) MovieLogsState.Empty else MovieLogsState.Content(movieLogs)
+                _uiState.update { it.copy(movieLogsState = newState) }
             }
             .onFailure { error ->
                 if (error is DataError.SessionExpired) {
-                    _uiState.update { it.copy(reviewsState = ReviewsState.Error("Sesión expirada")) }
+                    _uiState.update { it.copy(movieLogsState = MovieLogsState.Error("Sesión expirada")) }
                     _events.send(HomeEvent.NavigateToLogin)
                 } else {
                     val msg = error.message ?: "Error al cargar las reseñas."
-                    _uiState.update { it.copy(reviewsState = ReviewsState.Error(msg)) }
+                    _uiState.update { it.copy(movieLogsState = MovieLogsState.Error(msg)) }
                 }
             }
     }
 
-    fun onReviewClicked(reviewId: Long) {
+    fun onMovieLogClicked(movieLogId: Long) {
         viewModelScope.launch {
-            _events.send(HomeEvent.NavigateToReviewDetail(reviewId))
+            _events.send(HomeEvent.NavigateToMovieLogDetail(movieLogId))
         }
     }
 
-    fun onAddReviewClicked() {
+    fun onAddMovieLogClicked() {
         viewModelScope.launch {
             _events.send(HomeEvent.NavigateToSearchMovie)
         }

@@ -4,17 +4,17 @@ import androidx.compose.runtime.Immutable
 import com.example.bitacoradepeliculas.data.model.MovieLog
 
 @Immutable
-sealed interface ReviewsState {
-    data object Loading : ReviewsState
-    data class Content(val reviews: List<MovieLog>) : ReviewsState
-    data object Empty : ReviewsState
-    data class Error(val message: String) : ReviewsState
+sealed interface MovieLogsState {
+    data object Loading : MovieLogsState
+    data class Content(val movieLogs: List<MovieLog>) : MovieLogsState
+    data object Empty : MovieLogsState
+    data class Error(val message: String) : MovieLogsState
 }
 
 @Immutable
 data class HomeUiState(
     val userName: String = "Usuario",
-    val reviewsState: ReviewsState = ReviewsState.Loading,
+    val movieLogsState: MovieLogsState = MovieLogsState.Loading,
     val isRefreshing: Boolean = false,
     val isLoggingOut: Boolean = false
 )

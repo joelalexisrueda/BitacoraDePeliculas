@@ -15,6 +15,6 @@ data class MovieLog(
     @SerialName("movie_poster_path") val moviePosterPath: String? = null,
     val score: Double,
     @Serializable(with = LocalDateSerializer::class)
-    @SerialName("log_date") val reviewDate: LocalDate,
+    @SerialName("log_date") val logDate: LocalDate,
     @SerialName("review_text") val reviewText: String? = null
 )

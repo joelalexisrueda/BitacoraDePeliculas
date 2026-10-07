@@ -3,8 +3,8 @@ package com.example.bitacoradepeliculas.di
 import com.example.bitacoradepeliculas.config.AppConfig
 import com.example.bitacoradepeliculas.data.repository.AuthRepository
 import com.example.bitacoradepeliculas.data.repository.AuthRepositoryImpl
-import com.example.bitacoradepeliculas.data.repository.ReviewRepository
-import com.example.bitacoradepeliculas.data.repository.ReviewRepositoryImpl
+import com.example.bitacoradepeliculas.data.repository.MovieLogRepository
+import com.example.bitacoradepeliculas.data.repository.MovieLogRepositoryImpl
 import com.example.bitacoradepeliculas.presentation.auth.LoginViewModel
 import com.example.bitacoradepeliculas.presentation.auth.RegisterViewModel
 import com.example.bitacoradepeliculas.presentation.home.HomeViewModel
@@ -27,7 +27,7 @@ val appModule = module {
     }
 
     single<AuthRepository> { AuthRepositoryImpl(get()) }
-    single<ReviewRepository> { ReviewRepositoryImpl(get()) }
+    single<MovieLogRepository> { MovieLogRepositoryImpl(get()) }
 
     viewModelOf(::LoginViewModel)
     viewModelOf(::RegisterViewModel)

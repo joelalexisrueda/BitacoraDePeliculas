@@ -8,19 +8,19 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Order
 
-interface ReviewRepository {
-    suspend fun getMyReviews(): Result<List<MovieLog>>
-    suspend fun createReview(review: MovieLog): Result<Unit>
-    suspend fun getReviewById(id: Long): Result<MovieLog?>
-    suspend fun updateReview(review: MovieLog): Result<Unit>
-    suspend fun deleteReview(id: Long): Result<Unit>
+interface MovieLogRepository {
+    suspend fun getMyMovieLogs(): Result<List<MovieLog>>
+    suspend fun createMovieLog(movieLog: MovieLog): Result<Unit>
+    suspend fun getMovieLogById(id: Long): Result<MovieLog?>
+    suspend fun updateMovieLog(movieLog: MovieLog): Result<Unit>
+    suspend fun deleteMovieLog(id: Long): Result<Unit>
 }
 
-class ReviewRepositoryImpl(
+class MovieLogRepositoryImpl(
     private val supabaseClient: SupabaseClient
-) : ReviewRepository {
+) : MovieLogRepository {
 
-    override suspend fun getMyReviews(): Result<List<MovieLog>> {
+    override suspend fun getMyMovieLogs(): Result<List<MovieLog>> {
         return safeCall {
             supabaseClient.from(SupabaseTables.MOVIE_LOG)
                 .select {
@@ -34,19 +34,19 @@ class ReviewRepositoryImpl(
         )
     }
 
-    override suspend fun createReview(review: MovieLog): Result<Unit> {
+    override suspend fun createMovieLog(movieLog: MovieLog): Result<Unit> {
         return Result.failure(NotImplementedError("Será implementado en la siguiente fase"))
     }
 
-    override suspend fun getReviewById(id: Long): Result<MovieLog?> {
+    override suspend fun getMovieLogById(id: Long): Result<MovieLog?> {
         return Result.failure(NotImplementedError("Será implementado en la siguiente fase"))
     }
 
-    override suspend fun updateReview(review: MovieLog): Result<Unit> {
+    override suspend fun updateMovieLog(movieLog: MovieLog): Result<Unit> {
         return Result.failure(NotImplementedError("Será implementado en la siguiente fase"))
     }
 
-    override suspend fun deleteReview(id: Long): Result<Unit> {
+    override suspend fun deleteMovieLog(id: Long): Result<Unit> {
         return Result.failure(NotImplementedError("Será implementado en la siguiente fase"))
     }
 }
