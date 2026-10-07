@@ -1,6 +1,7 @@
 package com.example.bitacoradepeliculas.data.repository
 
 import com.example.bitacoradepeliculas.data.model.MovieLog
+import com.example.bitacoradepeliculas.data.model.NewMovieLog
 import com.example.bitacoradepeliculas.domain.model.DataError
 
 class FakeMovieLogRepository : MovieLogRepository {
@@ -23,9 +24,23 @@ class FakeMovieLogRepository : MovieLogRepository {
         }
     }
 
-    override suspend fun createMovieLog(movieLog: MovieLog): Result<Unit> {
-        movieLogs.add(movieLog)
-        return Result.success(Unit)
+    override suspend fun createMovieLog(newMovieLog: NewMovieLog): Result<Unit> {
+        return if (shouldFail) {
+            Result.failure(errorToReturn)
+        } else {
+            val nextId = (movieLogs.maxOfOrNull { it.id } ?: 0L) + 1L
+            val log = MovieLog(
+                id = nextId,
+                movieTitle = newMovieLog.movieTitle,
+                movieYear = newMovieLog.movieYear,
+                moviePosterPath = newMovieLog.moviePosterPath,
+                score = newMovieLog.score,
+                logDate = newMovieLog.logDate,
+                reviewText = newMovieLog.reviewText
+            )
+            movieLogs.add(log)
+            Result.success(Unit)
+        }
     }
 
     override suspend fun getMovieLogById(id: Long): Result<MovieLog?> {
