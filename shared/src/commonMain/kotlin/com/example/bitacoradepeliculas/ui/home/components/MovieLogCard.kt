@@ -30,6 +30,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.example.bitacoradepeliculas.data.model.MovieLog
 import com.example.bitacoradepeliculas.domain.util.DateFormatter
@@ -40,7 +41,7 @@ import com.example.bitacoradepeliculas.ui.components.AppIcons
 fun MovieLogCard(
     movieLog: MovieLog,
     onClick: (Long) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val posterUrl = TmdbUtils.getPosterUrl(movieLog.moviePosterPath)
     val formattedDate = DateFormatter.formatToSpanish(movieLog.logDate)
@@ -112,7 +113,7 @@ fun MovieLogCard(
                     ) {
                         Text(
                             text = movieLog.movieTitle,
-                            style = MaterialTheme.typography.titleMedium,
+                            style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
                             color = MaterialTheme.colorScheme.onSurface,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
@@ -149,7 +150,7 @@ fun MovieLogCard(
                     movieLog.movieYear?.let { year ->
                         Text(
                             text = year.toString(),
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }

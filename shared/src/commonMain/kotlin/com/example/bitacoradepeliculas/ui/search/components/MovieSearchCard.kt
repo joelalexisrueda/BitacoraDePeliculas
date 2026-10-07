@@ -36,6 +36,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.example.bitacoradepeliculas.domain.model.DirectorState
 import com.example.bitacoradepeliculas.domain.model.MovieSearchResult
@@ -46,7 +47,7 @@ import com.example.bitacoradepeliculas.ui.components.AppIcons
 fun MovieSearchCard(
     movie: MovieSearchResult,
     onClick: (MovieSearchResult) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val posterUrl = TmdbUtils.getPosterUrl(movie.posterPath, TmdbUtils.LIST_POSTER_SIZE)
 
@@ -112,7 +113,7 @@ fun MovieSearchCard(
                 Column {
                     Text(
                         text = movie.title,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
@@ -122,7 +123,7 @@ fun MovieSearchCard(
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = year.toString(),
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }

@@ -51,7 +51,7 @@ fun SearchMovieScreen(
     viewModel: SearchMovieViewModel,
     onNavigateBack: () -> Unit,
     onNavigateToLogMovie: (title: String, year: Int?, posterPath: String?) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val keyboardController = LocalSoftwareKeyboardController.current
