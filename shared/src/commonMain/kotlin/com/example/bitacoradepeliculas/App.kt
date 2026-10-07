@@ -9,7 +9,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -24,6 +23,7 @@ import com.example.bitacoradepeliculas.navigation.Screen
 import com.example.bitacoradepeliculas.presentation.auth.LoginViewModel
 import com.example.bitacoradepeliculas.presentation.auth.RegisterViewModel
 import com.example.bitacoradepeliculas.presentation.home.HomeViewModel
+import com.example.bitacoradepeliculas.presentation.log.LogMovieViewModel
 import com.example.bitacoradepeliculas.presentation.search.SearchMovieViewModel
 import com.example.bitacoradepeliculas.ui.auth.LoginScreen
 import com.example.bitacoradepeliculas.ui.auth.RegisterScreen
@@ -33,10 +33,10 @@ import com.example.bitacoradepeliculas.ui.log.LogMovieScreen
 import com.example.bitacoradepeliculas.ui.search.SearchMovieScreen
 import com.example.bitacoradepeliculas.ui.theme.AppTheme
 import io.github.jan.supabase.auth.status.SessionStatus
-import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.context.startKoin
+import org.koin.core.parameter.parametersOf
 import org.koin.mp.KoinPlatform
 
 private fun initKoin() {
@@ -71,7 +71,6 @@ fun App() {
                 val isAuthenticated = sessionStatus is SessionStatus.Authenticated
                 val startDestination: Screen = if (isAuthenticated) Screen.Home else Screen.Login
                 val navController = rememberNavController()
-                val scope = rememberCoroutineScope()
 
                 NavHost(
                     navController = navController,
@@ -142,12 +141,23 @@ fun App() {
 
                     composable<Screen.LogMovie> { backStackEntry ->
                         val route: Screen.LogMovie = backStackEntry.toRoute()
+                        val viewModel: LogMovieViewModel = koinViewModel(
+                            parameters = { parametersOf(route.title, route.year, route.posterPath) }
+                        )
                         LogMovieScreen(
-                            movieTitle = route.title,
-                            movieYear = route.year,
-                            posterPath = route.posterPath,
+                            viewModel = viewModel,
                             onNavigateBack = {
                                 navController.popBackStack()
+                            },
+                            onNavigateToHome = {
+                                navController.navigate(Screen.Home) {
+                                    popUpTo(Screen.Home) { inclusive = true }
+                                }
+                            },
+                            onNavigateToLogin = {
+                                navController.navigate(Screen.Login) {
+                                    popUpTo(Screen.Home) { inclusive = true }
+                                }
                             }
                         )
                     }
