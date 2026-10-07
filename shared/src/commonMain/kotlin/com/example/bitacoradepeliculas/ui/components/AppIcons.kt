@@ -403,4 +403,24 @@ object AppIcons {
             }
         }.build()
     }
+
+    val Check: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Check",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(fill = SolidColor(Color.White)) {
+                moveTo(9f, 16.17f)
+                lineTo(4.83f, 12f)
+                lineTo(3.41f, 13.41f)
+                lineTo(9f, 19.01f)
+                lineTo(20.59f, 7.41f)
+                lineTo(19.18f, 6f)
+                close()
+            }
+        }.build()
+    }
 }
