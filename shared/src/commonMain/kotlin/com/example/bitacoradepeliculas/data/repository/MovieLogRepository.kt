@@ -11,10 +11,10 @@ import io.github.jan.supabase.postgrest.query.Order
 
 interface MovieLogRepository {
     suspend fun getMyMovieLogs(): Result<List<MovieLog>>
+    suspend fun getById(id: Long): Result<MovieLog?>
     suspend fun createMovieLog(newMovieLog: NewMovieLog): Result<Unit>
-    suspend fun getMovieLogById(id: Long): Result<MovieLog?>
     suspend fun updateMovieLog(movieLog: MovieLog): Result<Unit>
-    suspend fun deleteMovieLog(id: Long): Result<Unit>
+    suspend fun delete(id: Long): Result<Unit>
 }
 
 class MovieLogRepositoryImpl(
@@ -35,6 +35,21 @@ class MovieLogRepositoryImpl(
         )
     }
 
+    override suspend fun getById(id: Long): Result<MovieLog?> {
+        return safeCall {
+            supabaseClient.from(SupabaseTables.MOVIE_LOG)
+                .select {
+                    filter {
+                        eq("id", id)
+                    }
+                }
+                .decodeSingleOrNull<MovieLog>()
+        }.fold(
+            onSuccess = { Result.success(it) },
+            onFailure = { Result.failure(it.toDataError()) }
+        )
+    }
+
     override suspend fun createMovieLog(newMovieLog: NewMovieLog): Result<Unit> {
         return safeCall {
             supabaseClient.from(SupabaseTables.MOVIE_LOG)
@@ -45,15 +60,22 @@ class MovieLogRepositoryImpl(
         )
     }
 
-    override suspend fun getMovieLogById(id: Long): Result<MovieLog?> {
-        return Result.failure(NotImplementedError("Será implementado en la siguiente fase"))
-    }
-
     override suspend fun updateMovieLog(movieLog: MovieLog): Result<Unit> {
         return Result.failure(NotImplementedError("Será implementado en la siguiente fase"))
     }
 
-    override suspend fun deleteMovieLog(id: Long): Result<Unit> {
-        return Result.failure(NotImplementedError("Será implementado en la siguiente fase"))
+    override suspend fun delete(id: Long): Result<Unit> {
+        // El borrado en Supabase RLS es idempotente (si no existe o no pertenece al usuario, no borra filas y termina ok)
+        return safeCall {
+            supabaseClient.from(SupabaseTables.MOVIE_LOG)
+                .delete {
+                    filter {
+                        eq("id", id)
+                    }
+                }
+        }.fold(
+            onSuccess = { Result.success(Unit) },
+            onFailure = { Result.failure(it.toDataError()) }
+        )
     }
 }

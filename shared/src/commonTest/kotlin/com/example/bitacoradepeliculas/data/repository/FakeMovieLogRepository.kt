@@ -10,6 +10,8 @@ class FakeMovieLogRepository : MovieLogRepository {
     var shouldFail = false
     var errorToReturn: DataError = DataError.Unknown("Error de prueba")
     var getMyMovieLogsCallCount = 0
+    var getByIdCallCount = 0
+    var deleteCallCount = 0
 
     override suspend fun getMyMovieLogs(): Result<List<MovieLog>> {
         getMyMovieLogsCallCount++
@@ -21,6 +23,15 @@ class FakeMovieLogRepository : MovieLogRepository {
                     .thenByDescending { it.id }
             )
             Result.success(sorted)
+        }
+    }
+
+    override suspend fun getById(id: Long): Result<MovieLog?> {
+        getByIdCallCount++
+        return if (shouldFail) {
+            Result.failure(errorToReturn)
+        } else {
+            Result.success(movieLogs.find { it.id == id })
         }
     }
 
@@ -43,10 +54,6 @@ class FakeMovieLogRepository : MovieLogRepository {
         }
     }
 
-    override suspend fun getMovieLogById(id: Long): Result<MovieLog?> {
-        return Result.success(movieLogs.find { it.id == id })
-    }
-
     override suspend fun updateMovieLog(movieLog: MovieLog): Result<Unit> {
         val index = movieLogs.indexOfFirst { it.id == movieLog.id }
         if (index != -1) {
@@ -55,8 +62,13 @@ class FakeMovieLogRepository : MovieLogRepository {
         return Result.success(Unit)
     }
 
-    override suspend fun deleteMovieLog(id: Long): Result<Unit> {
-        movieLogs.removeAll { it.id == id }
-        return Result.success(Unit)
+    override suspend fun delete(id: Long): Result<Unit> {
+        deleteCallCount++
+        return if (shouldFail) {
+            Result.failure(errorToReturn)
+        } else {
+            movieLogs.removeAll { it.id == id }
+            Result.success(Unit)
+        }
     }
 }
