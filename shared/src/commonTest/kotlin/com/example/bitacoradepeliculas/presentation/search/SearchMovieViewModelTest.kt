@@ -15,7 +15,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -119,8 +118,9 @@ class SearchMovieViewModelTest {
         assertTrue(resultsState is SearchState.Results)
 
         val movie = resultsState.items.first()
-        assertTrue(movie.directorState is DirectorState.Loaded)
-        assertEquals("Christopher Nolan", (movie.directorState as DirectorState.Loaded).name)
+        val directorState = movie.directorState
+        assertTrue(directorState is DirectorState.Loaded)
+        assertEquals("Christopher Nolan", directorState.name)
     }
 
     @Test
