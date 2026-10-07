@@ -219,4 +219,129 @@ object AppIcons {
             }
         }.build()
     }
+
+    val Add: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Add",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(fill = SolidColor(Color.White)) {
+                moveTo(19f, 13f)
+                horizontalLineTo(13f)
+                verticalLineTo(19f)
+                horizontalLineTo(11f)
+                verticalLineTo(13f)
+                horizontalLineTo(5f)
+                verticalLineTo(11f)
+                horizontalLineTo(11f)
+                verticalLineTo(5f)
+                horizontalLineTo(13f)
+                verticalLineTo(11f)
+                horizontalLineTo(19f)
+                verticalLineTo(13f)
+                close()
+            }
+        }.build()
+    }
+
+    val Logout: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Logout",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(fill = SolidColor(Color.White)) {
+                moveTo(17f, 7f)
+                lineTo(15.59f, 8.41f)
+                lineTo(17.17f, 10f)
+                horizontalLineTo(9f)
+                verticalLineTo(12f)
+                horizontalLineTo(17.17f)
+                lineTo(15.59f, 13.58f)
+                lineTo(17f, 15f)
+                lineTo(21f, 11f)
+                lineTo(17f, 7f)
+                close()
+                moveTo(5f, 5f)
+                horizontalLineTo(12f)
+                verticalLineTo(3f)
+                horizontalLineTo(5f)
+                curveTo(3.89f, 3f, 3f, 3.9f, 3f, 5f)
+                verticalLineTo(19f)
+                curveTo(3f, 20.1f, 3.89f, 21f, 5f, 21f)
+                horizontalLineTo(12f)
+                verticalLineTo(19f)
+                horizontalLineTo(5f)
+                verticalLineTo(5f)
+                close()
+            }
+        }.build()
+    }
+
+    val Calendar: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Calendar",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(fill = SolidColor(Color.White)) {
+                moveTo(19f, 4f)
+                horizontalLineTo(18f)
+                verticalLineTo(2f)
+                horizontalLineTo(16f)
+                verticalLineTo(4f)
+                horizontalLineTo(8f)
+                verticalLineTo(2f)
+                horizontalLineTo(6f)
+                verticalLineTo(4f)
+                horizontalLineTo(5f)
+                curveTo(3.89f, 4f, 3.01f, 4.9f, 3.01f, 6f)
+                lineTo(3f, 20f)
+                curveTo(3f, 21.1f, 3.89f, 22f, 5f, 22f)
+                horizontalLineTo(19f)
+                curveTo(20.1f, 22f, 21f, 21.1f, 21f, 20f)
+                verticalLineTo(6f)
+                curveTo(21f, 4.9f, 20.1f, 4f, 19f, 4f)
+                close()
+                moveTo(19f, 20f)
+                horizontalLineTo(5f)
+                verticalLineTo(10f)
+                horizontalLineTo(19f)
+                verticalLineTo(20f)
+                close()
+            }
+        }.build()
+    }
+
+    val Star: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Star",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(fill = SolidColor(Color.White)) {
+                moveTo(12f, 17.27f)
+                lineTo(18.18f, 21f)
+                lineTo(16.54f, 13.97f)
+                lineTo(22f, 9.24f)
+                lineTo(14.81f, 8.63f)
+                lineTo(12f, 2f)
+                lineTo(9.19f, 8.63f)
+                lineTo(2f, 9.24f)
+                lineTo(7.46f, 13.97f)
+                lineTo(5.82f, 21f)
+                lineTo(12f, 17.27f)
+                close()
+            }
+        }.build()
+    }
 }
