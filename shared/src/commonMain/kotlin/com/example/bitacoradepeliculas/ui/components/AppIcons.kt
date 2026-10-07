@@ -345,6 +345,27 @@ object AppIcons {
         }.build()
     }
 
+    val StarHalf: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "StarHalf",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(fill = SolidColor(Color.White)) {
+                moveTo(12f, 2f)
+                lineTo(9.19f, 8.63f)
+                lineTo(2f, 9.24f)
+                lineTo(7.46f, 13.97f)
+                lineTo(5.82f, 21f)
+                lineTo(12f, 17.27f)
+                verticalLineTo(2f)
+                close()
+            }
+        }.build()
+    }
+
     val Search: ImageVector by lazy {
         ImageVector.Builder(
             name = "Search",

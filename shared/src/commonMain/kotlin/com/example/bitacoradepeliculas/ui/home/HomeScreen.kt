@@ -41,7 +41,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.bitacoradepeliculas.presentation.home.HomeEvent
-import com.example.bitacoradepeliculas.presentation.home.HomeUiState
 import com.example.bitacoradepeliculas.presentation.home.HomeViewModel
 import com.example.bitacoradepeliculas.presentation.home.MovieLogsState
 import com.example.bitacoradepeliculas.ui.components.AppIcons
@@ -179,22 +178,16 @@ fun HomeScreen(
                                 )
                                 Spacer(modifier = Modifier.height(16.dp))
                                 Text(
-                                    text = "Aún no tienes reseñas",
+                                    text = "Aún no tenés registros",
                                     style = MaterialTheme.typography.headlineSmall,
                                     color = MaterialTheme.colorScheme.onBackground
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    text = "Registra tus películas vistas y lleva tu bitácora personal.",
+                                    text = "Registrá tus peliculas vistas y llevá tu bitácora personal.",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
-                                Spacer(modifier = Modifier.height(24.dp))
-                                Button(
-                                    onClick = viewModel::onAddMovieLogClicked
-                                ) {
-                                    Text("Registrar primera película")
-                                }
                             }
                         }
 
@@ -221,26 +214,35 @@ fun HomeScreen(
                         }
 
                         is MovieLogsState.Content -> {
-                            LazyColumn(
-                                state = lazyListState,
-                                contentPadding = PaddingValues(
-                                    start = 16.dp,
-                                    end = 16.dp,
-                                    top = 12.dp,
-                                    bottom = 88.dp // Space for FAB
-                                ),
-                                verticalArrangement = Arrangement.spacedBy(12.dp),
-                                modifier = Modifier.fillMaxSize()
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 16.dp, vertical = 12.dp)
                             ) {
-                                items(
-                                    items = state.movieLogs,
-                                    key = { it.id },
-                                    contentType = { "MovieLogCard" }
-                                ) { movieLog ->
-                                    MovieLogCard(
-                                        movieLog = movieLog,
-                                        onClick = viewModel::onMovieLogClicked
-                                    )
+                                Text(
+                                    text = "Mi lista de películas",
+                                    style = MaterialTheme.typography.titleLarge,
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                                LazyColumn(
+                                    state = lazyListState,
+                                    contentPadding = PaddingValues(
+                                        bottom = 88.dp // Space for FAB
+                                    ),
+                                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    items(
+                                        items = state.movieLogs,
+                                        key = { it.id },
+                                        contentType = { "MovieLogCard" }
+                                    ) { movieLog ->
+                                        MovieLogCard(
+                                            movieLog = movieLog,
+                                            onClick = viewModel::onMovieLogClicked
+                                        )
+                                    }
                                 }
                             }
                         }

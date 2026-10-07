@@ -39,10 +39,15 @@ class LogMovieViewModel(
     private val _events = Channel<LogMovieEvent>(Channel.BUFFERED)
     val events: Flow<LogMovieEvent> = _events.receiveAsFlow()
 
+    fun onScoreChanged(newScore: Double) {
+        val clamped = newScore.coerceIn(0.0, 10.0)
+        _uiState.update { it.copy(score = clamped) }
+    }
+
     fun onScoreChanged(starIndex: Int, isLeftHalf: Boolean) {
         val currentScore = _uiState.value.score
         val newScore = RatingUtils.calculateScore(starIndex, isLeftHalf, currentScore)
-        _uiState.update { it.copy(score = newScore) }
+        onScoreChanged(newScore)
     }
 
     fun onDateSelected(newDate: LocalDate) {
