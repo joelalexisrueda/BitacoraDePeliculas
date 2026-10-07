@@ -2,7 +2,6 @@ package com.example.bitacoradepeliculas.ui.log.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
@@ -27,12 +26,12 @@ fun ReviewTextField(
             value = value,
             onValueChange = onValueChange,
             enabled = enabled,
+            minLines = 4,
+            maxLines = 8,
             placeholder = { Text("Escribe tu reseña (opcional)") },
             shape = MaterialTheme.shapes.medium,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 120.dp)
+            modifier = Modifier.fillMaxWidth()
         )
 
         Text(

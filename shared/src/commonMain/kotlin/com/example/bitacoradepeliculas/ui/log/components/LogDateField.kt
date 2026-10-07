@@ -1,6 +1,7 @@
 package com.example.bitacoradepeliculas.ui.log.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DatePicker
@@ -14,6 +15,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.example.bitacoradepeliculas.domain.util.DatePickerUtils
 import com.example.bitacoradepeliculas.domain.util.DateFormatter
@@ -32,11 +35,10 @@ fun LogDateField(
     modifier: Modifier = Modifier
 ) {
     val formattedDate = DateFormatter.formatToSpanish(date)
-    val todayMillis = DatePickerUtils.localDateToUtcMillis(todayProvider.today())
+    val todayMillis = remember(todayProvider) { DatePickerUtils.localDateToUtcMillis(todayProvider.today()) }
 
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = DatePickerUtils.localDateToUtcMillis(date),
-        selectableDates = object : SelectableDates {
+    val selectableDates = remember(todayProvider, todayMillis) {
+        object : SelectableDates {
             override fun isSelectableDate(utcTimeMillis: Long): Boolean {
                 return utcTimeMillis <= todayMillis
             }
@@ -45,18 +47,36 @@ fun LogDateField(
                 return year <= currentYear
             }
         }
+    }
+
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = DatePickerUtils.localDateToUtcMillis(date),
+        selectableDates = selectableDates
     )
+
+    val interactionSource = remember { MutableInteractionSource() }
+    LaunchedEffect(interactionSource) {
+        interactionSource.interactions.collect {
+            if (it is androidx.compose.foundation.interaction.PressInteraction.Release) {
+                onDatePickerVisibilityChanged(true)
+            }
+        }
+    }
 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onDatePickerVisibilityChanged(true) }
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) { onDatePickerVisibilityChanged(true) }
     ) {
         OutlinedTextField(
             value = formattedDate,
             onValueChange = {},
             readOnly = true,
-            enabled = false,
+            enabled = true,
+            interactionSource = interactionSource,
             label = { Text("Fecha de registro") },
             leadingIcon = {
                 Icon(
