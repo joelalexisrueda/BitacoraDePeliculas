@@ -17,14 +17,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.example.bitacoradepeliculas.data.repository.AuthRepository
 import com.example.bitacoradepeliculas.di.appModule
 import com.example.bitacoradepeliculas.navigation.Screen
 import com.example.bitacoradepeliculas.presentation.auth.LoginViewModel
 import com.example.bitacoradepeliculas.presentation.auth.RegisterViewModel
+import com.example.bitacoradepeliculas.presentation.home.HomeViewModel
 import com.example.bitacoradepeliculas.ui.auth.LoginScreen
 import com.example.bitacoradepeliculas.ui.auth.RegisterScreen
+import com.example.bitacoradepeliculas.ui.detail.MovieLogDetailScreen
 import com.example.bitacoradepeliculas.ui.home.HomeScreen
+import com.example.bitacoradepeliculas.ui.search.SearchMovieScreen
 import com.example.bitacoradepeliculas.ui.theme.AppTheme
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.launch
@@ -104,14 +108,37 @@ fun App() {
                     }
 
                     composable<Screen.Home> {
+                        val viewModel: HomeViewModel = koinViewModel()
                         HomeScreen(
-                            onLogout = {
-                                scope.launch {
-                                    authRepository.logout()
-                                    navController.navigate(Screen.Login) {
-                                        popUpTo(Screen.Home) { inclusive = true }
-                                    }
+                            viewModel = viewModel,
+                            onNavigateToLogin = {
+                                navController.navigate(Screen.Login) {
+                                    popUpTo(Screen.Home) { inclusive = true }
                                 }
+                            },
+                            onNavigateToSearchMovie = {
+                                navController.navigate(Screen.SearchMovie)
+                            },
+                            onNavigateToReviewDetail = { movieLogId ->
+                                navController.navigate(Screen.MovieLogDetail(movieLogId))
+                            }
+                        )
+                    }
+
+                    composable<Screen.SearchMovie> {
+                        SearchMovieScreen(
+                            onNavigateBack = {
+                                navController.popBackStack()
+                            }
+                        )
+                    }
+
+                    composable<Screen.MovieLogDetail> { backStackEntry ->
+                        val route: Screen.MovieLogDetail = backStackEntry.toRoute()
+                        MovieLogDetailScreen(
+                            movieLogId = route.movieLogId,
+                            onNavigateBack = {
+                                navController.popBackStack()
                             }
                         )
                     }
