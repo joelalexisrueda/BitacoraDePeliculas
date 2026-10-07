@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.bitacoradepeliculas.data.repository.MovieSearchRepository
 import com.example.bitacoradepeliculas.domain.model.DirectorState
 import com.example.bitacoradepeliculas.domain.model.MovieSearchResult
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +22,7 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlin.time.Duration.Companion.milliseconds
 
-@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+@OptIn(FlowPreview::class)
 class SearchMovieViewModel(
     private val movieSearchRepository: MovieSearchRepository
 ) : ViewModel() {
@@ -112,7 +111,7 @@ class SearchMovieViewModel(
         }
     }
 
-    private suspend fun loadDirectorsForResults(results: List<MovieSearchResult>) {
+    private fun loadDirectorsForResults(results: List<MovieSearchResult>) {
         val semaphore = Semaphore(4)
         results.forEach { movie ->
             viewModelScope.launch {
