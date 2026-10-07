@@ -11,6 +11,7 @@ class FakeAuthRepository : AuthRepository {
     private val _sessionStatus = MutableStateFlow<SessionStatus>(SessionStatus.NotAuthenticated())
     override val sessionStatus: StateFlow<SessionStatus> = _sessionStatus.asStateFlow()
 
+    var userNameToReturn: String? = "Usuario"
     var shouldFailLogin = false
     var shouldFailRegister = false
     var loginError: AuthError = AuthError.InvalidCredentials
@@ -18,6 +19,8 @@ class FakeAuthRepository : AuthRepository {
 
     var loginCallCount = 0
     var registerCallCount = 0
+
+    override fun currentUserName(): String? = userNameToReturn
 
     override suspend fun login(email: String, password: String): Result<Unit> {
         loginCallCount++
