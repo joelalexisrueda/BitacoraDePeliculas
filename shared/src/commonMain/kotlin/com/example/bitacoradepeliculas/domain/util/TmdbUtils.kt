@@ -3,6 +3,7 @@ package com.example.bitacoradepeliculas.domain.util
 object TmdbUtils {
     const val DEFAULT_POSTER_SIZE = "w342"
     const val LIST_POSTER_SIZE = "w185"
+    const val DETAIL_POSTER_SIZE = "w500"
 
     fun getPosterUrl(posterPath: String?, size: String = DEFAULT_POSTER_SIZE): String? {
         if (posterPath.isNullOrBlank()) return null

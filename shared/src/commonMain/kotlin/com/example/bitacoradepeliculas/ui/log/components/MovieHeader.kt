@@ -30,9 +30,10 @@ fun MovieHeader(
     title: String,
     year: Int?,
     posterPath: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    posterSize: String = TmdbUtils.DEFAULT_POSTER_SIZE
 ) {
-    val posterUrl = TmdbUtils.getPosterUrl(posterPath, TmdbUtils.DEFAULT_POSTER_SIZE)
+    val posterUrl = TmdbUtils.getPosterUrl(posterPath, posterSize)
 
     Row(
         modifier = modifier.fillMaxWidth(),

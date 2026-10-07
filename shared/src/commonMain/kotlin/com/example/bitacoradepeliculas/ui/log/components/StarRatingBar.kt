@@ -25,8 +25,9 @@ import kotlin.math.round
 @Composable
 fun StarRatingBar(
     score: Double,
-    onScoreChanged: (newScore: Double) -> Unit,
-    modifier: Modifier = Modifier
+    onScoreChanged: (newScore: Double) -> Unit = {},
+    modifier: Modifier = Modifier,
+    readOnly: Boolean = false
 ) {
     val ratingDescription = "Puntuación ${RatingUtils.formatScoreText(score)}"
 
@@ -34,18 +35,24 @@ fun StarRatingBar(
         modifier = modifier
             .fillMaxWidth()
             .semantics { contentDescription = ratingDescription }
-            .pointerInput(Unit) {
-                detectDragGestures { change, _ ->
-                    val x = change.position.x
-                    val totalWidth = size.width
-                    if (totalWidth > 0) {
-                        val fraction = (x / totalWidth).coerceIn(0f, 1f)
-                        val rawScore = round(fraction * 20) * 0.5
-                        val clamped = rawScore.coerceIn(0.0, 10.0)
-                        onScoreChanged(clamped)
+            .then(
+                if (!readOnly) {
+                    Modifier.pointerInput(Unit) {
+                        detectDragGestures { change, _ ->
+                            val x = change.position.x
+                            val totalWidth = size.width
+                            if (totalWidth > 0) {
+                                val fraction = (x / totalWidth).coerceIn(0f, 1f)
+                                val rawScore = round(fraction * 20) * 0.5
+                                val clamped = rawScore.coerceIn(0.0, 10.0)
+                                onScoreChanged(clamped)
+                            }
+                        }
                     }
+                } else {
+                    Modifier
                 }
-            }
+            )
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -63,13 +70,19 @@ fun StarRatingBar(
                         .aspectRatio(1f)
                         .widthIn(max = 36.dp)
                         .heightIn(max = 36.dp)
-                        .pointerInput(i) {
-                            detectTapGestures { offset ->
-                                val isLeft = offset.x < size.width / 2
-                                val newScore = RatingUtils.calculateScore(i, isLeft, score)
-                                onScoreChanged(newScore)
+                        .then(
+                            if (!readOnly) {
+                                Modifier.pointerInput(i) {
+                                    detectTapGestures { offset ->
+                                        val isLeft = offset.x < size.width / 2
+                                        val newScore = RatingUtils.calculateScore(i, isLeft, score)
+                                        onScoreChanged(newScore)
+                                    }
+                                }
+                            } else {
+                                Modifier
                             }
-                        },
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
                     val icon = when {
