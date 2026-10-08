@@ -2,7 +2,7 @@
 
 Aplicación móvil multiplataforma (Android e iOS) para llevar un registro personal de las películas que viste: la puntuás, anotás la fecha y escribís tu opinión. Desarrollada con **Kotlin Multiplatform** y **Compose Multiplatform** como solución al challenge técnico de AranguriApps.
 
-> 💡 **Cuenta de prueba inmediata:** Se provee la cuenta con correo **`prueba@prueba.com`** y contraseña **`prueba`** para probar todas las funcionalidades inmediatamente sin necesidad de registrarse.
+> 💡 **Cuenta de prueba:** Se provee la cuenta con correo **`prueba@prueba.com`** y contraseña **`prueba`** para probar todas las funcionalidades inmediatamente sin necesidad de registrarse.
 
 ## Tabla de contenidos
 
@@ -302,48 +302,6 @@ Para generar el APK de release con minificación R8 y reducción de recursos hab
 ```
 
 El APK instalable queda generado en `androidApp/build/outputs/apk/release/`.
-
-### Supabase propio (opcional)
-
-1. Creá un proyecto en [Supabase](https://supabase.com).
-2. En **Authentication → Providers → Email**, desactivá **Confirm email** (la app asume que, tras registrarse, el usuario queda con sesión iniciada).
-3. En el **SQL Editor**, ejecutá:
-
-   ```sql
-   create table public.movie_log (
-     id bigint generated always as identity primary key,
-     user_id uuid not null default auth.uid () references auth.users (id) on delete cascade,
-     movie_title text not null,
-     movie_year int,
-     movie_poster_path text,
-     score numeric(3, 1) not null check (score >= 0 and score <= 10),
-     log_date date not null,
-     review_text text
-   );
-
-   -- Opcional: solo permitir pasos de 0.5 en el puntaje
-   -- alter table public.movie_log add constraint movie_log_score_half_step
-   --   check (score * 2 = trunc(score * 2));
-
-   create index movie_log_user_date_idx on public.movie_log (user_id, log_date desc);
-
-   alter table public.movie_log enable row level security;
-
-   create policy "select own" on public.movie_log for select to authenticated
-     using ((select auth.uid ()) = user_id);
-
-   create policy "insert own" on public.movie_log for insert to authenticated
-     with check ((select auth.uid ()) = user_id);
-
-   create policy "update own" on public.movie_log for update to authenticated
-     using ((select auth.uid ()) = user_id)
-     with check ((select auth.uid ()) = user_id);
-
-   create policy "delete own" on public.movie_log for delete to authenticated
-     using ((select auth.uid ()) = user_id);
-   ```
-
-4. Copiá la **URL** y la clave **anon/publishable** (*Project Settings → API*) a `AppConfig.kt`. **Nunca** uses la clave `service_role` en la app.
 
 ---
 
