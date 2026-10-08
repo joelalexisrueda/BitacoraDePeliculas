@@ -11,6 +11,7 @@ import com.example.bitacoradepeliculas.domain.util.SystemTodayProvider
 import com.example.bitacoradepeliculas.domain.util.TodayProvider
 import com.example.bitacoradepeliculas.presentation.auth.LoginViewModel
 import com.example.bitacoradepeliculas.presentation.auth.RegisterViewModel
+import com.example.bitacoradepeliculas.presentation.detail.EditMovieLogViewModel
 import com.example.bitacoradepeliculas.presentation.detail.MovieLogDetailViewModel
 import com.example.bitacoradepeliculas.presentation.home.HomeViewModel
 import com.example.bitacoradepeliculas.presentation.log.LogMovieViewModel
@@ -72,5 +73,8 @@ val appModule = module {
     }
     viewModel { (movieLogId: Long) ->
         MovieLogDetailViewModel(get(), movieLogId)
+    }
+    viewModel { (movieLogId: Long) ->
+        EditMovieLogViewModel(get(), get(), movieLogId)
     }
 }
