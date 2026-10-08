@@ -1,7 +1,5 @@
 package com.example.bitacoradepeliculas
 
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -19,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.bitacoradepeliculas.data.repository.AuthRepository
 import com.example.bitacoradepeliculas.di.appModule
+import com.example.bitacoradepeliculas.navigation.AppTransitions
 import com.example.bitacoradepeliculas.navigation.Screen
 import com.example.bitacoradepeliculas.presentation.auth.LoginViewModel
 import com.example.bitacoradepeliculas.presentation.auth.RegisterViewModel
@@ -78,10 +77,15 @@ fun App() {
                 NavHost(
                     navController = navController,
                     startDestination = startDestination,
-                    enterTransition = { fadeIn() },
-                    exitTransition = { fadeOut() }
+                    enterTransition = AppTransitions.sharedAxisEnter,
+                    exitTransition = AppTransitions.sharedAxisExit,
+                    popEnterTransition = AppTransitions.sharedAxisPopEnter,
+                    popExitTransition = AppTransitions.sharedAxisPopExit
                 ) {
-                    composable<Screen.Login> {
+                    composable<Screen.Login>(
+                        enterTransition = AppTransitions.fadeThroughEnter,
+                        exitTransition = AppTransitions.sharedAxisExit
+                    ) {
                         val viewModel: LoginViewModel = koinViewModel()
                         LoginScreen(
                             viewModel = viewModel,
@@ -111,7 +115,9 @@ fun App() {
                         )
                     }
 
-                    composable<Screen.Home> {
+                    composable<Screen.Home>(
+                        enterTransition = AppTransitions.fadeThroughEnter
+                    ) {
                         val viewModel: HomeViewModel = koinViewModel()
                         HomeScreen(
                             viewModel = viewModel,
