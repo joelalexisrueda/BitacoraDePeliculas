@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.bitacoradepeliculas.data.model.NewMovieLog
 import com.example.bitacoradepeliculas.data.repository.MovieLogRepository
 import com.example.bitacoradepeliculas.domain.model.DataError
+import com.example.bitacoradepeliculas.domain.util.MovieLogFormValidator
 import com.example.bitacoradepeliculas.domain.util.RatingUtils
 import com.example.bitacoradepeliculas.domain.util.ReviewTextNormalizer
 import com.example.bitacoradepeliculas.domain.util.TodayProvider
@@ -52,12 +53,12 @@ class LogMovieViewModel(
 
     fun onDateSelected(newDate: LocalDate) {
         val today = todayProvider.today()
-        val validDate = if (newDate > today) today else newDate
+        val validDate = MovieLogFormValidator.validateDate(newDate, today)
         _uiState.update { it.copy(logDate = validDate, isDatePickerVisible = false) }
     }
 
     fun onReviewTextChange(newText: String) {
-        val truncated = newText.take(ReviewTextNormalizer.MAX_LENGTH)
+        val truncated = MovieLogFormValidator.validateReviewText(newText)
         _uiState.update { it.copy(reviewText = truncated) }
     }
 
@@ -77,7 +78,7 @@ class LogMovieViewModel(
 
         val state = _uiState.value
         val today = todayProvider.today()
-        val validatedDate = if (state.logDate > today) today else state.logDate
+        val validatedDate = MovieLogFormValidator.validateDate(state.logDate, today)
         val normalizedText = ReviewTextNormalizer.normalize(state.reviewText)
 
         val newMovieLog = NewMovieLog(
