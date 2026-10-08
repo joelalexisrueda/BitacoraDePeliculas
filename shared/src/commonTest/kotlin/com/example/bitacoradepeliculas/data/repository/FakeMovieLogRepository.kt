@@ -1,6 +1,7 @@
 package com.example.bitacoradepeliculas.data.repository
 
 import com.example.bitacoradepeliculas.data.model.MovieLog
+import com.example.bitacoradepeliculas.data.model.MovieLogUpdate
 import com.example.bitacoradepeliculas.data.model.NewMovieLog
 import com.example.bitacoradepeliculas.domain.model.DataError
 
@@ -12,6 +13,7 @@ class FakeMovieLogRepository : MovieLogRepository {
     var getMyMovieLogsCallCount = 0
     var getByIdCallCount = 0
     var deleteCallCount = 0
+    var updateCallCount = 0
 
     override suspend fun getMyMovieLogs(): Result<List<MovieLog>> {
         getMyMovieLogsCallCount++
@@ -51,6 +53,27 @@ class FakeMovieLogRepository : MovieLogRepository {
             )
             movieLogs.add(log)
             Result.success(Unit)
+        }
+    }
+
+    override suspend fun update(id: Long, update: MovieLogUpdate): Result<MovieLog?> {
+        updateCallCount++
+        return if (shouldFail) {
+            Result.failure(errorToReturn)
+        } else {
+            val index = movieLogs.indexOfFirst { it.id == id }
+            if (index == -1) {
+                Result.success(null)
+            } else {
+                val existing = movieLogs[index]
+                val updated = existing.copy(
+                    score = update.score,
+                    logDate = update.logDate,
+                    reviewText = update.reviewText
+                )
+                movieLogs[index] = updated
+                Result.success(updated)
+            }
         }
     }
 
