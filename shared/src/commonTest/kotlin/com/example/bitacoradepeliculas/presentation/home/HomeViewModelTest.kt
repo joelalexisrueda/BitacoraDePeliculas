@@ -61,7 +61,7 @@ class HomeViewModelTest {
 
         val state = viewModel.uiState.value
         assertTrue(state.movieLogsState is MovieLogsState.Content)
-        val list = (state.movieLogsState as MovieLogsState.Content).movieLogs
+        val list = state.movieLogsState.movieLogs
         assertEquals(3, list.size)
         assertEquals(2L, list[0].id)
         assertEquals(1L, list[1].id)
