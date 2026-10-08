@@ -53,6 +53,7 @@ class MovieLogDetailViewModel(
     }
 
     fun onResumed() {
+        if (_uiState.value.detailState is MovieLogDetailState.Loading) return
         viewModelScope.launch {
             movieLogRepository.getById(movieLogId)
                 .onSuccess { log ->
