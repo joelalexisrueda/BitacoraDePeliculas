@@ -146,21 +146,29 @@ flowchart TB
 
 ```text
 .
-├── androidApp/                  # Punto de entrada Android (MainActivity)
-├── iosApp/                      # Punto de entrada iOS (requiere Xcode)
+├── androidApp/                  # Punto de entrada Android (MainActivity.kt)
+├── iosApp/                      # Punto de entrada iOS (ContentView.swift)
 ├── shared/
 │   └── src/
 │       ├── commonMain/kotlin/com/example/bitacoradepeliculas/
-│       │   ├── config/          # AppConfig (URLs y claves públicas)
-│       │   ├── data/            # Repositorios, DTOs, safeCall
-│       │   ├── domain/          # Validadores, errores, utilidades puras
-│       │   ├── presentation/    # ViewModels y UiState (auth, home, search, log, detail)
-│       │   ├── ui/              # Pantallas, componentes reutilizables y tema
-│       │   ├── navigation/      # Rutas tipadas y NavHost
-│       │   └── di/              # Módulos de Koin
-│       └── commonTest/          # Tests unitarios de la lógica
-├── gradle/libs.versions.toml    # Catálogo de versiones
-└── config/local.properties.example
+│       │   ├── App.kt           # Punto de entrada Compose y NavHost de la app
+│       │   ├── config/          # AppConfig (URLs y claves de Supabase/TMDB)
+│       │   ├── data/            # Repositorios, DTOs de TMDB/Supabase, safeCall y modelos
+│       │   ├── domain/          # Validadores (AuthValidator), errores tipados y utilidades puras
+│       │   ├── presentation/    # ViewModels, UiState y eventos por pantalla (auth, home, search, log, detail)
+│       │   ├── ui/              # Vistas Compose organizadas por pantalla, componentes y tema
+│       │   │   ├── auth/        # LoginScreen, RegisterScreen
+│       │   │   ├── home/        # HomeScreen, MovieLogCard
+│       │   │   ├── search/      # SearchMovieScreen, MovieSearchCard
+│       │   │   ├── log/         # LogMovieScreen, componentes del formulario
+│       │   │   ├── detail/      # MovieLogDetailScreen, EditMovieLogScreen
+│       │   │   ├── components/  # Componentes reutilizables (AppTextField, AppIcons)
+│       │   │   └── theme/       # Color, Type, Theme (AppTheme)
+│       │   ├── navigation/      # Rutas tipadas @Serializable (Screen.kt) y AppTransitions
+│       │   └── di/              # Módulos de Koin (AppModule.kt)
+│       └── commonTest/          # Suite de 92 tests unitarios (data, domain, presentation, builders)
+├── gradle/libs.versions.toml    # Catálogo centralizado de versiones
+└── config/local.properties.example # Ejemplo de clave local TMDB
 ```
 
 ### Modelo de datos
