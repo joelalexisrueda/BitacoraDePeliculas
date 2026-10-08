@@ -2,6 +2,7 @@ package com.example.bitacoradepeliculas.presentation.auth
 
 import com.example.bitacoradepeliculas.data.repository.FakeAuthRepository
 import com.example.bitacoradepeliculas.domain.auth.AuthError
+import com.example.bitacoradepeliculas.domain.auth.AuthValidator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -36,6 +37,21 @@ class RegisterViewModelTest {
     }
 
     @Test
+    fun onNameChange_truncatesTo15CharsMax() = runTest(testDispatcher) {
+        viewModel.onNameChange("12345678901234567890") // 20 chars
+        assertEquals(AuthValidator.NAME_MAX_LENGTH, viewModel.uiState.value.name.length)
+        assertEquals("123456789012345", viewModel.uiState.value.name)
+    }
+
+    @Test
+    fun onNameChange_doesNotSplitSurrogatePair() = runTest(testDispatcher) {
+        val textWithEmoji = "🎸123456789012345"
+        viewModel.onNameChange(textWithEmoji)
+        val nameResult = viewModel.uiState.value.name
+        assertTrue(nameResult.length <= AuthValidator.NAME_MAX_LENGTH)
+    }
+
+    @Test
     fun register_withPasswordMismatch_setsConfirmPasswordError() = runTest(testDispatcher) {
         viewModel.onEmailChange("nuevo@example.com")
         viewModel.onNameChange("Usuario Test")
@@ -52,7 +68,7 @@ class RegisterViewModelTest {
     @Test
     fun register_withValidInput_triggersSuccessEvent() = runTest(testDispatcher) {
         viewModel.onEmailChange("nuevo@example.com")
-        viewModel.onNameChange("Usuario Test")
+        viewModel.onNameChange("  Usuario Test  ")
         viewModel.onPasswordChange("password123")
         viewModel.onConfirmPasswordChange("password123")
 
@@ -60,6 +76,7 @@ class RegisterViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(1, fakeRepository.registerCallCount)
+        assertEquals("Usuario Test", fakeRepository.lastRegisteredName)
         val event = viewModel.events.first()
         assertTrue(event is AuthEvent.Success)
     }
@@ -70,7 +87,7 @@ class RegisterViewModelTest {
         fakeRepository.registerError = AuthError.EmailAlreadyRegistered
 
         viewModel.onEmailChange("existente@example.com")
-        viewModel.onNameChange("Usuario Existente")
+        viewModel.onNameChange("Usuario Exist")
         viewModel.onPasswordChange("password123")
         viewModel.onConfirmPasswordChange("password123")
 

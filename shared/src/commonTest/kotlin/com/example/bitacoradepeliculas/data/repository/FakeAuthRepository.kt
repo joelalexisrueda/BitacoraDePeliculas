@@ -19,6 +19,7 @@ class FakeAuthRepository : AuthRepository {
 
     var loginCallCount = 0
     var registerCallCount = 0
+    var lastRegisteredName: String? = null
 
     override fun currentUserName(): String? = userNameToReturn
 
@@ -33,6 +34,7 @@ class FakeAuthRepository : AuthRepository {
 
     override suspend fun register(email: String, password: String, name: String): Result<Unit> {
         registerCallCount++
+        lastRegisteredName = name
         return if (shouldFailRegister) {
             Result.failure(registerError)
         } else {
