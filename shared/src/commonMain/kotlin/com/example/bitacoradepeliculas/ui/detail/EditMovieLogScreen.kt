@@ -28,7 +28,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -62,7 +61,6 @@ import com.example.bitacoradepeliculas.ui.log.components.MovieHeader
 import com.example.bitacoradepeliculas.ui.log.components.ReviewTextField
 import com.example.bitacoradepeliculas.ui.log.components.StarRatingBar
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditMovieLogScreen(
     viewModel: EditMovieLogViewModel,

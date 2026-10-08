@@ -41,7 +41,6 @@ import com.example.bitacoradepeliculas.ui.log.components.MovieHeader
 import com.example.bitacoradepeliculas.ui.log.components.ReviewTextField
 import com.example.bitacoradepeliculas.ui.log.components.StarRatingBar
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogMovieScreen(
     viewModel: LogMovieViewModel,

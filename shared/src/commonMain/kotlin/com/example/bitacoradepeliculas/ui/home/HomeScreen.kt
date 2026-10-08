@@ -51,7 +51,6 @@ import com.example.bitacoradepeliculas.ui.components.AppIcons
 import com.example.bitacoradepeliculas.ui.home.components.MovieLogCard
 import com.example.bitacoradepeliculas.ui.home.components.SkeletonMovieLogCard
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,

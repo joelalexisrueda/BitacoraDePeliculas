@@ -40,7 +40,6 @@ import com.example.bitacoradepeliculas.ui.components.AppTextField
 import com.example.bitacoradepeliculas.ui.components.PasswordField
 import com.example.bitacoradepeliculas.ui.components.PrimaryButton
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     viewModel: RegisterViewModel,
