@@ -1,12 +1,16 @@
 package com.example.bitacoradepeliculas.ui.home
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -130,6 +134,7 @@ fun HomeScreen(
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
+        containerColor = MaterialTheme.colorScheme.background,
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { paddingValues ->
         PullToRefreshBox(
@@ -148,100 +153,110 @@ fun HomeScreen(
                         .fillMaxSize()
                         .widthIn(max = 600.dp)
                 ) {
-                    when (val state = uiState.movieLogsState) {
-                        is MovieLogsState.Loading -> {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                repeat(4) {
-                                    SkeletonMovieLogCard()
+                    AnimatedContent(
+                        targetState = uiState.movieLogsState,
+                        transitionSpec = {
+                            fadeIn(animationSpec = tween(200)) togetherWith fadeOut(animationSpec = tween(200))
+                        },
+                        contentKey = { it::class },
+                        label = "HomeScreenStateAnimation"
+                    ) { state ->
+                        when (state) {
+                            is MovieLogsState.Loading -> {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    repeat(4) {
+                                        SkeletonMovieLogCard()
+                                    }
                                 }
                             }
-                        }
 
-                        is MovieLogsState.Empty -> {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(24.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Icon(
-                                    imageVector = AppIcons.Movie,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(72.dp)
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text(
-                                    text = "Aún no tenés registros",
-                                    style = MaterialTheme.typography.headlineSmall,
-                                    color = MaterialTheme.colorScheme.onBackground
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = "Registrá tus peliculas vistas y llevá tu bitácora personal.",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-
-                        is MovieLogsState.Error -> {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(24.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = state.message,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Button(
-                                    onClick = viewModel::retry
+                            is MovieLogsState.Empty -> {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(24.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
                                 ) {
-                                    Text("Reintentar")
+                                    Icon(
+                                        imageVector = AppIcons.Movie,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(72.dp)
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Text(
+                                        text = "Todavía no tenés peliculas registradas",
+                                        style = MaterialTheme.typography.headlineSmall,
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = "Registrá tus peliculas vistas y llevá tu bitácora personal.",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 }
                             }
-                        }
 
-                        is MovieLogsState.Content -> {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = 16.dp, vertical = 12.dp)
-                            ) {
-                                Text(
-                                    text = "Mi lista de películas",
-                                    style = MaterialTheme.typography.titleLarge,
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    modifier = Modifier.padding(bottom = 8.dp)
-                                )
-                                LazyColumn(
-                                    state = lazyListState,
-                                    contentPadding = PaddingValues(
-                                        bottom = 88.dp // Space for FAB
-                                    ),
-                                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                                    modifier = Modifier.fillMaxSize()
+                            is MovieLogsState.Error -> {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(24.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
                                 ) {
-                                    items(
-                                        items = state.movieLogs,
-                                        key = { it.id },
-                                        contentType = { "MovieLogCard" }
-                                    ) { movieLog ->
-                                        MovieLogCard(
-                                            movieLog = movieLog,
-                                            onClick = viewModel::onMovieLogClicked
-                                        )
+                                    Text(
+                                        text = state.message,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Button(
+                                        onClick = viewModel::retry
+                                    ) {
+                                        Text("Reintentar")
+                                    }
+                                }
+                            }
+
+                            is MovieLogsState.Content -> {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                                ) {
+                                    Text(
+                                        text = "Mi lista de películas",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        color = MaterialTheme.colorScheme.onBackground,
+                                        modifier = Modifier.padding(bottom = 8.dp)
+                                    )
+                                    LazyColumn(
+                                        state = lazyListState,
+                                        contentPadding = PaddingValues(
+                                            bottom = 88.dp // Space for FAB
+                                        ),
+                                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                                        modifier = Modifier.fillMaxSize()
+                                    ) {
+                                        items(
+                                            items = state.movieLogs,
+                                            key = { it.id },
+                                            contentType = { "MovieLogCard" }
+                                        ) { movieLog ->
+                                            MovieLogCard(
+                                                movieLog = movieLog,
+                                                onClick = viewModel::onMovieLogClicked,
+                                                modifier = Modifier.animateItem()
+                                            )
+                                        }
                                     }
                                 }
                             }
