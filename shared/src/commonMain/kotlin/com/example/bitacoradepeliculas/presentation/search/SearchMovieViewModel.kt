@@ -6,6 +6,7 @@ import com.example.bitacoradepeliculas.data.repository.MovieSearchRepository
 import com.example.bitacoradepeliculas.domain.model.DirectorState
 import com.example.bitacoradepeliculas.domain.model.MovieSearchResult
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,6 +36,7 @@ class SearchMovieViewModel(
 
     private val _queryFlow = MutableStateFlow("")
     private var isNavigating = false
+    private var directorLoadingJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -89,6 +91,7 @@ class SearchMovieViewModel(
 
     private fun executeSearch(query: String) {
         if (query.length < 2) {
+            directorLoadingJob?.cancel()
             _uiState.update { it.copy(searchState = SearchState.Idle) }
             return
         }
@@ -98,6 +101,7 @@ class SearchMovieViewModel(
             movieSearchRepository.searchMovies(query)
                 .onSuccess { results ->
                     if (results.isEmpty()) {
+                        directorLoadingJob?.cancel()
                         _uiState.update { it.copy(searchState = SearchState.Empty) }
                     } else {
                         _uiState.update { it.copy(searchState = SearchState.Results(results)) }
@@ -105,6 +109,7 @@ class SearchMovieViewModel(
                     }
                 }
                 .onFailure { error ->
+                    directorLoadingJob?.cancel()
                     val errorMsg = error.message ?: "Error al buscar películas."
                     _uiState.update { it.copy(searchState = SearchState.Error(errorMsg)) }
                 }
@@ -112,17 +117,20 @@ class SearchMovieViewModel(
     }
 
     private fun loadDirectorsForResults(results: List<MovieSearchResult>) {
-        val semaphore = Semaphore(4)
-        results.forEach { movie ->
-            viewModelScope.launch {
-                semaphore.withPermit {
-                    movieSearchRepository.getDirector(movie.tmdbId)
-                        .onSuccess { directorName ->
-                            updateMovieDirectorState(movie.tmdbId, DirectorState.Loaded(directorName))
-                        }
-                        .onFailure {
-                            updateMovieDirectorState(movie.tmdbId, DirectorState.Failed)
-                        }
+        directorLoadingJob?.cancel()
+        directorLoadingJob = viewModelScope.launch {
+            val semaphore = Semaphore(4)
+            results.forEach { movie ->
+                launch {
+                    semaphore.withPermit {
+                        movieSearchRepository.getDirector(movie.tmdbId)
+                            .onSuccess { directorName ->
+                                updateMovieDirectorState(movie.tmdbId, DirectorState.Loaded(directorName))
+                            }
+                            .onFailure {
+                                updateMovieDirectorState(movie.tmdbId, DirectorState.Failed)
+                            }
+                    }
                 }
             }
         }
