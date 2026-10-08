@@ -1,10 +1,14 @@
 package com.example.bitacoradepeliculas.ui.detail
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -122,6 +126,7 @@ fun EditMovieLogScreen(
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
+        containerColor = MaterialTheme.colorScheme.background,
         modifier = modifier
     ) { paddingValues ->
         Box(
@@ -131,148 +136,157 @@ fun EditMovieLogScreen(
                 .imePadding(),
             contentAlignment = Alignment.TopCenter
         ) {
-            when (val state = uiState.editState) {
-                is EditMovieLogState.Loading -> {
-                    val infiniteTransition = rememberInfiniteTransition()
-                    val alpha by infiniteTransition.animateFloat(
-                        initialValue = 0.3f,
-                        targetValue = 0.7f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(durationMillis = 800),
-                            repeatMode = RepeatMode.Reverse
-                        )
-                    )
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .widthIn(max = 600.dp)
-                            .padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .width(160.dp)
-                                .height(240.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .alpha(alpha)
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
-                        )
-                        Spacer(modifier = Modifier.height(24.dp))
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth(0.7f)
-                                .height(28.dp)
-                                .clip(RoundedCornerShape(4.dp))
-                                .alpha(alpha)
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
-                        )
-                    }
-                }
-
-                is EditMovieLogState.NotFound -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            imageVector = AppIcons.Movie,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(64.dp)
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Esta reseña ya no existe",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        FilledTonalButton(onClick = onNavigateToHome) {
-                            Text("Volver a Home")
-                        }
-                    }
-                }
-
-                is EditMovieLogState.Error -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = state.message,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        FilledTonalButton(onClick = viewModel::retry) {
-                            Text("Reintentar")
-                        }
-                    }
-                }
-
-                is EditMovieLogState.Editing -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .widthIn(max = 600.dp)
-                            .padding(24.dp)
-                            .verticalScroll(rememberScrollState()),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        MovieHeader(
-                            title = state.movieTitle,
-                            year = state.movieYear,
-                            posterPath = state.moviePosterPath,
-                            posterSize = TmdbUtils.DETAIL_POSTER_SIZE
+            AnimatedContent(
+                targetState = uiState.editState,
+                transitionSpec = {
+                    fadeIn(animationSpec = tween(200)) togetherWith fadeOut(animationSpec = tween(200))
+                },
+                contentKey = { it::class },
+                label = "EditMovieLogStateAnimation"
+            ) { state ->
+                when (state) {
+                    is EditMovieLogState.Loading -> {
+                        val infiniteTransition = rememberInfiniteTransition()
+                        val alpha by infiniteTransition.animateFloat(
+                            initialValue = 0.3f,
+                            targetValue = 0.7f,
+                            animationSpec = infiniteRepeatable(
+                                animation = tween(durationMillis = 800),
+                                repeatMode = RepeatMode.Reverse
+                            )
                         )
 
-                        Spacer(modifier = Modifier.height(28.dp))
-
-                        // Star Rating Bar (Editable)
                         Column(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .widthIn(max = 600.dp)
+                                .padding(24.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            StarRatingBar(
-                                score = uiState.score,
-                                onScoreChanged = viewModel::onScoreChanged
+                            Box(
+                                modifier = Modifier
+                                    .width(160.dp)
+                                    .height(240.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .alpha(alpha)
+                                    .background(MaterialTheme.colorScheme.surfaceVariant)
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = RatingUtils.formatScoreText(uiState.score),
-                                style = MaterialTheme.typography.titleLarge,
-                                color = MaterialTheme.colorScheme.primary
+                            Spacer(modifier = Modifier.height(24.dp))
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(0.7f)
+                                    .height(28.dp)
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .alpha(alpha)
+                                    .background(MaterialTheme.colorScheme.surfaceVariant)
                             )
                         }
+                    }
 
-                        Spacer(modifier = Modifier.height(24.dp))
+                    is EditMovieLogState.NotFound -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = AppIcons.Movie,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(64.dp)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Esta reseña ya no existe",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            FilledTonalButton(onClick = onNavigateToHome) {
+                                Text("Volver a Home")
+                            }
+                        }
+                    }
 
-                        // Date Field
-                        LogDateField(
-                            date = uiState.logDate,
-                            todayProvider = todayProvider,
-                            isDatePickerVisible = uiState.isDatePickerVisible,
-                            onDatePickerVisibilityChanged = viewModel::onDatePickerVisibilityChanged,
-                            onDateSelected = viewModel::onDateSelected,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                    is EditMovieLogState.Error -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = state.message,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            FilledTonalButton(onClick = viewModel::retry) {
+                                Text("Reintentar")
+                            }
+                        }
+                    }
 
-                        Spacer(modifier = Modifier.height(24.dp))
+                    is EditMovieLogState.Editing -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .widthIn(max = 600.dp)
+                                .padding(24.dp)
+                                .verticalScroll(rememberScrollState()),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            MovieHeader(
+                                title = state.movieTitle,
+                                year = state.movieYear,
+                                posterPath = state.moviePosterPath,
+                                posterSize = TmdbUtils.DETAIL_POSTER_SIZE
+                            )
 
-                        // Review Text Field
-                        ReviewTextField(
-                            value = uiState.reviewText,
-                            onValueChange = viewModel::onReviewTextChange,
-                            enabled = !uiState.isSaving,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                            Spacer(modifier = Modifier.height(28.dp))
+
+                            // Star Rating Bar (Editable)
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                StarRatingBar(
+                                    score = uiState.score,
+                                    onScoreChanged = viewModel::onScoreChanged
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = RatingUtils.formatScoreText(uiState.score),
+                                    style = MaterialTheme.typography.titleLarge,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                            // Date Field
+                            LogDateField(
+                                date = uiState.logDate,
+                                todayProvider = todayProvider,
+                                isDatePickerVisible = uiState.isDatePickerVisible,
+                                onDatePickerVisibilityChanged = viewModel::onDatePickerVisibilityChanged,
+                                onDateSelected = viewModel::onDateSelected,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                            // Review Text Field
+                            ReviewTextField(
+                                value = uiState.reviewText,
+                                onValueChange = viewModel::onReviewTextChange,
+                                enabled = !uiState.isSaving,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                 }
             }
