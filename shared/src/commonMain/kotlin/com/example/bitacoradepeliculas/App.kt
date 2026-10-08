@@ -22,6 +22,7 @@ import com.example.bitacoradepeliculas.di.appModule
 import com.example.bitacoradepeliculas.navigation.Screen
 import com.example.bitacoradepeliculas.presentation.auth.LoginViewModel
 import com.example.bitacoradepeliculas.presentation.auth.RegisterViewModel
+import com.example.bitacoradepeliculas.presentation.detail.EditMovieLogViewModel
 import com.example.bitacoradepeliculas.presentation.detail.MovieLogDetailViewModel
 import com.example.bitacoradepeliculas.presentation.home.HomeViewModel
 import com.example.bitacoradepeliculas.presentation.log.LogMovieViewModel
@@ -192,10 +193,23 @@ fun App() {
 
                     composable<Screen.EditMovieLog> { backStackEntry ->
                         val route: Screen.EditMovieLog = backStackEntry.toRoute()
+                        val viewModel: EditMovieLogViewModel = koinViewModel(
+                            parameters = { parametersOf(route.movieLogId) }
+                        )
                         EditMovieLogScreen(
-                            movieLogId = route.movieLogId,
+                            viewModel = viewModel,
                             onNavigateBack = {
                                 navController.popBackStack()
+                            },
+                            onNavigateToHome = {
+                                navController.navigate(Screen.Home) {
+                                    popUpTo(Screen.Home) { inclusive = true }
+                                }
+                            },
+                            onNavigateToLogin = {
+                                navController.navigate(Screen.Login) {
+                                    popUpTo(Screen.Home) { inclusive = true }
+                                }
                             }
                         )
                     }
