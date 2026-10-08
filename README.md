@@ -71,8 +71,11 @@ flowchart LR
 
 ## 2. Capturas
 
-El proyecto cuenta con diseño responsivo, adaptación a pantallas anchas y soporte nativo para tema claro y oscuro (sin parpadeos de transición).
-
+| Login | Registro | Home |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/pantallaLogin.png" width="250"> | <img src="docs/screenshots/pantallaRegister.png" width="250"> | <img src="docs/screenshots/pantallaHome.png" width="250"> |
+| **Ver Reseña** | **Editar Reseña** | **Registrar Película (GIF)** |
+| <img src="docs/screenshots/pantallaVerResenia.png" width="250"> | <img src="docs/screenshots/pantallaEditarResenia.png" width="250"> | <img src="docs/screenshots/pantallaRegistrarPelicula.gif" width="250"> |
 ---
 
 ## 3. Stack tecnológico
