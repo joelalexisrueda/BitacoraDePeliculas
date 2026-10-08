@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -54,170 +55,175 @@ fun App() {
     initKoin()
 
     AppTheme {
-        val authRepository: AuthRepository = koinInject()
-        val sessionStatus by authRepository.sessionStatus.collectAsStateWithLifecycle()
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            val authRepository: AuthRepository = koinInject()
+            val sessionStatus by authRepository.sessionStatus.collectAsStateWithLifecycle()
 
-        when (sessionStatus) {
-            is SessionStatus.Initializing -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(48.dp),
-                        color = MaterialTheme.colorScheme.primary
-                    )
+            when (sessionStatus) {
+                is SessionStatus.Initializing -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(48.dp),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
-            }
-            else -> {
-                val isAuthenticated = sessionStatus is SessionStatus.Authenticated
-                val startDestination: Screen = if (isAuthenticated) Screen.Home else Screen.Login
-                val navController = rememberNavController()
+                else -> {
+                    val isAuthenticated = sessionStatus is SessionStatus.Authenticated
+                    val startDestination: Screen = if (isAuthenticated) Screen.Home else Screen.Login
+                    val navController = rememberNavController()
 
-                NavHost(
-                    navController = navController,
-                    startDestination = startDestination,
-                    enterTransition = AppTransitions.sharedAxisEnter,
-                    exitTransition = AppTransitions.sharedAxisExit,
-                    popEnterTransition = AppTransitions.sharedAxisPopEnter,
-                    popExitTransition = AppTransitions.sharedAxisPopExit
-                ) {
-                    composable<Screen.Login>(
-                        enterTransition = AppTransitions.fadeThroughEnter,
-                        exitTransition = AppTransitions.sharedAxisExit
+                    NavHost(
+                        navController = navController,
+                        startDestination = startDestination,
+                        enterTransition = AppTransitions.sharedAxisEnter,
+                        exitTransition = AppTransitions.sharedAxisExit,
+                        popEnterTransition = AppTransitions.sharedAxisPopEnter,
+                        popExitTransition = AppTransitions.sharedAxisPopExit
                     ) {
-                        val viewModel: LoginViewModel = koinViewModel()
-                        LoginScreen(
-                            viewModel = viewModel,
-                            onNavigateToRegister = {
-                                navController.navigate(Screen.Register)
-                            },
-                            onLoginSuccess = {
-                                navController.navigate(Screen.Home) {
-                                    popUpTo(Screen.Login) { inclusive = true }
+                        composable<Screen.Login>(
+                            enterTransition = AppTransitions.fadeThroughEnter,
+                            exitTransition = AppTransitions.sharedAxisExit
+                        ) {
+                            val viewModel: LoginViewModel = koinViewModel()
+                            LoginScreen(
+                                viewModel = viewModel,
+                                onNavigateToRegister = {
+                                    navController.navigate(Screen.Register)
+                                },
+                                onLoginSuccess = {
+                                    navController.navigate(Screen.Home) {
+                                        popUpTo(Screen.Login) { inclusive = true }
+                                    }
                                 }
-                            }
-                        )
-                    }
+                            )
+                        }
 
-                    composable<Screen.Register> {
-                        val viewModel: RegisterViewModel = koinViewModel()
-                        RegisterScreen(
-                            viewModel = viewModel,
-                            onNavigateBack = {
-                                navController.popBackStack()
-                            },
-                            onRegisterSuccess = {
-                                navController.navigate(Screen.Home) {
-                                    popUpTo(Screen.Register) { inclusive = true }
+                        composable<Screen.Register> {
+                            val viewModel: RegisterViewModel = koinViewModel()
+                            RegisterScreen(
+                                viewModel = viewModel,
+                                onNavigateBack = {
+                                    navController.popBackStack()
+                                },
+                                onRegisterSuccess = {
+                                    navController.navigate(Screen.Home) {
+                                        popUpTo(Screen.Register) { inclusive = true }
+                                    }
                                 }
-                            }
-                        )
-                    }
+                            )
+                        }
 
-                    composable<Screen.Home>(
-                        enterTransition = AppTransitions.fadeThroughEnter
-                    ) {
-                        val viewModel: HomeViewModel = koinViewModel()
-                        HomeScreen(
-                            viewModel = viewModel,
-                            onNavigateToLogin = {
-                                navController.navigate(Screen.Login) {
-                                    popUpTo(Screen.Home) { inclusive = true }
+                        composable<Screen.Home>(
+                            enterTransition = AppTransitions.fadeThroughEnter
+                        ) {
+                            val viewModel: HomeViewModel = koinViewModel()
+                            HomeScreen(
+                                viewModel = viewModel,
+                                onNavigateToLogin = {
+                                    navController.navigate(Screen.Login) {
+                                        popUpTo(Screen.Home) { inclusive = true }
+                                    }
+                                },
+                                onNavigateToSearchMovie = {
+                                    navController.navigate(Screen.SearchMovie)
+                                },
+                                onNavigateToReviewDetail = { movieLogId ->
+                                    navController.navigate(Screen.MovieLogDetail(movieLogId))
                                 }
-                            },
-                            onNavigateToSearchMovie = {
-                                navController.navigate(Screen.SearchMovie)
-                            },
-                            onNavigateToReviewDetail = { movieLogId ->
-                                navController.navigate(Screen.MovieLogDetail(movieLogId))
-                            }
-                        )
-                    }
+                            )
+                        }
 
-                    composable<Screen.SearchMovie> {
-                        val viewModel: SearchMovieViewModel = koinViewModel()
-                        SearchMovieScreen(
-                            viewModel = viewModel,
-                            onNavigateBack = {
-                                navController.popBackStack()
-                            },
-                            onNavigateToLogMovie = { title, year, posterPath ->
-                                navController.navigate(Screen.LogMovie(title, year, posterPath))
-                            }
-                        )
-                    }
+                        composable<Screen.SearchMovie> {
+                            val viewModel: SearchMovieViewModel = koinViewModel()
+                            SearchMovieScreen(
+                                viewModel = viewModel,
+                                onNavigateBack = {
+                                    navController.popBackStack()
+                                },
+                                onNavigateToLogMovie = { title, year, posterPath ->
+                                    navController.navigate(Screen.LogMovie(title, year, posterPath))
+                                }
+                            )
+                        }
 
-                    composable<Screen.LogMovie> { backStackEntry ->
-                        val route: Screen.LogMovie = backStackEntry.toRoute()
-                        val viewModel: LogMovieViewModel = koinViewModel(
-                            parameters = { parametersOf(route.title, route.year, route.posterPath) }
-                        )
-                        LogMovieScreen(
-                            viewModel = viewModel,
-                            onNavigateBack = {
-                                navController.popBackStack()
-                            },
-                            onNavigateToHome = {
-                                navController.navigate(Screen.Home) {
-                                    popUpTo(Screen.Home) { inclusive = true }
+                        composable<Screen.LogMovie> { backStackEntry ->
+                            val route: Screen.LogMovie = backStackEntry.toRoute()
+                            val viewModel: LogMovieViewModel = koinViewModel(
+                                parameters = { parametersOf(route.title, route.year, route.posterPath) }
+                            )
+                            LogMovieScreen(
+                                viewModel = viewModel,
+                                onNavigateBack = {
+                                    navController.popBackStack()
+                                },
+                                onNavigateToHome = {
+                                    navController.navigate(Screen.Home) {
+                                        popUpTo(Screen.Home) { inclusive = true }
+                                    }
+                                },
+                                onNavigateToLogin = {
+                                    navController.navigate(Screen.Login) {
+                                        popUpTo(Screen.Home) { inclusive = true }
+                                    }
                                 }
-                            },
-                            onNavigateToLogin = {
-                                navController.navigate(Screen.Login) {
-                                    popUpTo(Screen.Home) { inclusive = true }
-                                }
-                            }
-                        )
-                    }
+                            )
+                        }
 
-                    composable<Screen.MovieLogDetail> { backStackEntry ->
-                        val route: Screen.MovieLogDetail = backStackEntry.toRoute()
-                        val viewModel: MovieLogDetailViewModel = koinViewModel(
-                            parameters = { parametersOf(route.movieLogId) }
-                        )
-                        MovieLogDetailScreen(
-                            viewModel = viewModel,
-                            onNavigateBack = {
-                                navController.popBackStack()
-                            },
-                            onNavigateToEdit = { id ->
-                                navController.navigate(Screen.EditMovieLog(id))
-                            },
-                            onNavigateToHome = {
-                                navController.navigate(Screen.Home) {
-                                    popUpTo(Screen.Home) { inclusive = true }
+                        composable<Screen.MovieLogDetail> { backStackEntry ->
+                            val route: Screen.MovieLogDetail = backStackEntry.toRoute()
+                            val viewModel: MovieLogDetailViewModel = koinViewModel(
+                                parameters = { parametersOf(route.movieLogId) }
+                            )
+                            MovieLogDetailScreen(
+                                viewModel = viewModel,
+                                onNavigateBack = {
+                                    navController.popBackStack()
+                                },
+                                onNavigateToEdit = { id ->
+                                    navController.navigate(Screen.EditMovieLog(id))
+                                },
+                                onNavigateToHome = {
+                                    navController.navigate(Screen.Home) {
+                                        popUpTo(Screen.Home) { inclusive = true }
+                                    }
+                                },
+                                onNavigateToLogin = {
+                                    navController.navigate(Screen.Login) {
+                                        popUpTo(Screen.Home) { inclusive = true }
+                                    }
                                 }
-                            },
-                            onNavigateToLogin = {
-                                navController.navigate(Screen.Login) {
-                                    popUpTo(Screen.Home) { inclusive = true }
-                                }
-                            }
-                        )
-                    }
+                            )
+                        }
 
-                    composable<Screen.EditMovieLog> { backStackEntry ->
-                        val route: Screen.EditMovieLog = backStackEntry.toRoute()
-                        val viewModel: EditMovieLogViewModel = koinViewModel(
-                            parameters = { parametersOf(route.movieLogId) }
-                        )
-                        EditMovieLogScreen(
-                            viewModel = viewModel,
-                            onNavigateBack = {
-                                navController.popBackStack()
-                            },
-                            onNavigateToHome = {
-                                navController.navigate(Screen.Home) {
-                                    popUpTo(Screen.Home) { inclusive = true }
+                        composable<Screen.EditMovieLog> { backStackEntry ->
+                            val route: Screen.EditMovieLog = backStackEntry.toRoute()
+                            val viewModel: EditMovieLogViewModel = koinViewModel(
+                                parameters = { parametersOf(route.movieLogId) }
+                            )
+                            EditMovieLogScreen(
+                                viewModel = viewModel,
+                                onNavigateBack = {
+                                    navController.popBackStack()
+                                },
+                                onNavigateToHome = {
+                                    navController.navigate(Screen.Home) {
+                                        popUpTo(Screen.Home) { inclusive = true }
+                                    }
+                                },
+                                onNavigateToLogin = {
+                                    navController.navigate(Screen.Login) {
+                                        popUpTo(Screen.Home) { inclusive = true }
+                                    }
                                 }
-                            },
-                            onNavigateToLogin = {
-                                navController.navigate(Screen.Login) {
-                                    popUpTo(Screen.Home) { inclusive = true }
-                                }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
             }
