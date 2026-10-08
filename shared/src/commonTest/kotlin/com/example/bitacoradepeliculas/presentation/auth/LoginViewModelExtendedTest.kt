@@ -65,10 +65,7 @@ class LoginViewModelExtendedTest {
     }
 
     @Test
-    fun login_doubleTapBehavior_documentedFinding() = runTest(testDispatcher) {
-        // HALLAZGO DE BUG DETECTADO:
-        // En LoginViewModel.login(), 'isLoading = true' se asigna asíncronamente dentro de viewModelScope.launch,
-        // permitiendo que toques síncronos consecutivos incrementen el conteo de llamadas.
+    fun login_preventsDoubleTap() = runTest(testDispatcher) {
         viewModel.onEmailChange("user@example.com")
         viewModel.onPasswordChange("password123")
 
@@ -76,7 +73,7 @@ class LoginViewModelExtendedTest {
         viewModel.login() // segundo toque síncrono
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertEquals(2, fakeRepository.loginCallCount) // Comportamiento actual documentado
+        assertEquals(1, fakeRepository.loginCallCount)
     }
 
     @Test

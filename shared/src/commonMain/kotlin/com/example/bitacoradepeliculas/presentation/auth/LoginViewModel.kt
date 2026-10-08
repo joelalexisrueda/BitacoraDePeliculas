@@ -59,8 +59,9 @@ class LoginViewModel(
             return
         }
 
+        _uiState.update { it.copy(isLoading = true, generalError = null) }
+
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, generalError = null) }
             authRepository.login(email.trim(), password)
                 .onSuccess {
                     _uiState.update { state -> state.copy(isLoading = false) }
