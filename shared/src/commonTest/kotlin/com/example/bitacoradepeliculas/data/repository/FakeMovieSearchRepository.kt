@@ -1,6 +1,5 @@
 package com.example.bitacoradepeliculas.data.repository
 
-import com.example.bitacoradepeliculas.domain.model.DirectorState
 import com.example.bitacoradepeliculas.domain.model.MovieSearchResult
 import com.example.bitacoradepeliculas.domain.model.TmdbError
 
