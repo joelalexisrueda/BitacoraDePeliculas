@@ -32,6 +32,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.bitacoradepeliculas.domain.auth.AuthValidator
 import com.example.bitacoradepeliculas.presentation.auth.AuthEvent
 import com.example.bitacoradepeliculas.presentation.auth.RegisterViewModel
 import com.example.bitacoradepeliculas.ui.components.AppIcons
@@ -126,9 +127,10 @@ fun RegisterScreen(
                 AppTextField(
                     value = uiState.name,
                     onValueChange = viewModel::onNameChange,
-                    label = "Nombre Completo",
+                    label = "Nombre",
                     leadingIcon = AppIcons.Person,
                     errorMessage = uiState.nameError,
+                    supportingText = "${uiState.name.length}/${AuthValidator.NAME_MAX_LENGTH}",
                     enabled = !uiState.isLoading,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,

@@ -1,5 +1,6 @@
 package com.example.bitacoradepeliculas.ui.components
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -22,6 +24,7 @@ fun AppTextField(
     modifier: Modifier = Modifier,
     leadingIcon: ImageVector? = null,
     errorMessage: String? = null,
+    supportingText: String? = null,
     enabled: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -49,13 +52,21 @@ fun AppTextField(
             shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth()
         )
-        if (errorMessage != null) {
-            Text(
-                text = errorMessage,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(start = 12.dp, top = 4.dp)
-            )
+        val footerText = errorMessage ?: supportingText
+        if (footerText != null) {
+            val textColor = if (errorMessage != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp, top = 4.dp, end = 12.dp)
+            ) {
+                Text(
+                    text = footerText,
+                    color = textColor,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.align(if (errorMessage != null) Alignment.CenterStart else Alignment.CenterEnd)
+                )
+            }
         }
     }
 }

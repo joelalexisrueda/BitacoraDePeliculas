@@ -41,7 +41,8 @@ class RegisterViewModel(
     }
 
     fun onNameChange(name: String) {
-        _uiState.update { it.copy(name = name, nameError = null, generalError = null) }
+        val truncated = AuthValidator.truncateName(name)
+        _uiState.update { it.copy(name = truncated, nameError = null, generalError = null) }
     }
 
     fun onPasswordChange(password: String) {
